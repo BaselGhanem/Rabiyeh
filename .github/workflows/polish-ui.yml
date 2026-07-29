@@ -1,0 +1,66 @@
+name: Polish investor UI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/polish-ui.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply UI fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+
+          html = html.replace("document.querySelectorAll('[data-ar]').forEach(x=>x.textContent=x.dataset[S.lang]);", "document.querySelectorAll('[data-ar]').forEach(x=>x.innerHTML=x.dataset[S.lang]);")
+
+          loader_css = r'''
+.loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:linear-gradient(145deg,#f6f5f1 0%,#edf3f1 100%);transition:opacity .55s ease,visibility .55s ease}.loader.hide{opacity:0;visibility:hidden;pointer-events:none}.loader-card{width:min(420px,calc(100% - 40px));padding:34px;border:1px solid rgba(7,59,58,.12);border-radius:28px;background:rgba(255,255,255,.82);backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(7,59,58,.14);text-align:center}.loader-mark{width:76px;height:76px;margin:0 auto 20px;position:relative}.loader-mark:before,.loader-mark:after{content:"";position:absolute;inset:8px;border:3px solid #073b3a;border-radius:22px;transform:rotate(45deg);animation:loaderSpin 2.4s cubic-bezier(.65,0,.35,1) infinite}.loader-mark:after{inset:23px;border:0;background:#099999;border-radius:8px;animation-direction:reverse;animation-duration:1.7s}.loader h2{margin:0 0 6px;font-size:24px;color:#073b3a}.loader p{margin:0;color:#67777a;font-size:13px}.loader-line{height:4px;margin-top:24px;border-radius:999px;background:#e2e9e6;overflow:hidden}.loader-line span{display:block;width:42%;height:100%;border-radius:999px;background:linear-gradient(90deg,#073b3a,#099999);animation:loaderMove 1.25s ease-in-out infinite}.excel-fab{position:fixed;inset-inline-end:24px;bottom:24px;z-index:70;display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:999px;background:#073b3a;color:#fff;border:1px solid rgba(255,255,255,.16);box-shadow:0 20px 45px rgba(7,59,58,.28);font-weight:700;transition:transform .2s ease,box-shadow .2s ease}.excel-fab:hover{transform:translateY(-3px);box-shadow:0 24px 55px rgba(7,59,58,.36)}.excel-fab svg{width:20px;height:20px;flex:none}@keyframes loaderSpin{0%{transform:rotate(45deg) scale(.92)}50%{transform:rotate(225deg) scale(1.06)}100%{transform:rotate(405deg) scale(.92)}}@keyframes loaderMove{0%{transform:translateX(-120%)}50%{transform:translateX(80%)}100%{transform:translateX(260%)}}@media(max-width:650px){.excel-fab{width:56px;height:56px;padding:0;justify-content:center}.excel-fab span{display:none}}@media(prefers-reduced-motion:reduce){.loader-mark:before,.loader-mark:after,.loader-line span{animation:none}}@media print{.loader,.excel-fab{display:none!important}}
+'''
+          if '.loader{position:fixed' not in html:
+              html = html.replace('</style>', loader_css + '</style>', 1)
+
+          loader_markup = r'''<div class="loader" id="appLoader" role="status" aria-live="polite"><div class="loader-card"><div class="loader-mark" aria-hidden="true"></div><h2 data-ar="جاري تجهيز التحليل الاستثماري" data-en="Preparing the investment analysis">جاري تجهيز التحليل الاستثماري</h2><p data-ar="يتم تحميل المؤشرات والرسوم والسيناريوهات" data-en="Loading metrics, charts and scenarios">يتم تحميل المؤشرات والرسوم والسيناريوهات</p><div class="loader-line"><span></span></div></div></div>'''
+          if 'id="appLoader"' not in html:
+              html = html.replace('<body>', '<body>' + loader_markup, 1)
+
+          fab_markup = r'''<a class="excel-fab" href="https://raw.githubusercontent.com/BaselGhanem/Rabiyeh/main/Rabieh_Investor_Feasibility_Dynamic_Model(1).xlsx" download aria-label="تنزيل ملف Excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg><span data-ar="تنزيل ملف Excel" data-en="Download Excel">تنزيل ملف Excel</span></a>'''
+          if 'class="excel-fab"' in html:
+              html = re.sub(r'<a class="excel-fab".*?</a>', fab_markup, html, count=1, flags=re.S)
+          else:
+              html = html.replace('</body>', fab_markup + '</body>', 1)
+
+          loader_script = r'''<script>window.addEventListener('load',()=>{window.setTimeout(()=>document.getElementById('appLoader')?.classList.add('hide'),650)});</script>'''
+          if "getElementById('appLoader')?.classList.add('hide')" not in html:
+              html = html.replace('</body>', loader_script + '</body>', 1)
+
+          path.write_text(html, encoding='utf-8')
+          PY
+      - name: Validate JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path('index.html').read_text(encoding='utf-8')
+          scripts = re.findall(r'<script>(.*?)</script>', html, flags=re.S)
+          for i, script in enumerate(scripts):
+              Path(f'/tmp/site-{i}.js').write_text(script, encoding='utf-8')
+          PY
+          for f in /tmp/site-*.js; do node --check "$f"; done
+      - name: Commit polished UI
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add premium loader and Excel FAB" || exit 0
+          git push
