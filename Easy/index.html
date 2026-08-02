@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#073b3a">
+  <meta name="description" content="مقارنة سهلة بين أربعة مشاريع استثمارية في الرابية والسهل">
+  <title>EASY | مقارنة المشاريع بلغة سهلة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1">
+  <script src="app.js?v=1" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="العودة إلى أعلى الصفحة"><span class="brand-mark">E</span><span><b>EASY</b><small>دراسة المشروع بلغة سهلة</small></span></a>
+    <div class="header-actions"><a class="button ghost" href="../">النسخة التفصيلية</a><button class="button" type="button" onclick="window.print()">طباعة</button></div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">أربعة مشاريع · قرار واحد</span>
+        <h1>أي مشروع أفضل؟<br><em>الأرقام تحكي ببساطة.</em></h1>
+        <p>بدون مصطلحات مالية معقدة. اختر المشروع، وحدد هل تريد احتساب قيمة الأرض أو العقار، وستعرف كم تدفع وكم يدخل وكم يبقى وما القرار المقترح.</p>
+        <a class="button primary" href="#summary">شاهد النتيجة</a>
+      </div>
+      <aside class="winner-card">
+        <span class="status good">النتيجة الحالية</span>
+        <p>أفضل خيار بين المشاريع الأربعة</p>
+        <h2>الكوفي شوب</h2>
+        <div class="rank"><b>69.25</b><span>نقطة من 100</span></div>
+        <small>مشروع الفساتين في المرتبة الثانية، لكنه يحتاج اختبار الطلب قبل شراء العقار.</small>
+      </aside>
+    </section>
+
+    <section class="choice-panel" aria-label="خيارات العرض">
+      <div class="choice">
+        <label for="project">أي مشروع تريد أن ترى؟</label>
+        <select id="project">
+          <option value="all">قارن جميع المشاريع</option>
+          <option value="shop">الكوفي شوب</option>
+          <option value="dress">تأجير فساتين الزفاف</option>
+          <option value="house">الكوفي هاوس</option>
+          <option value="school">المدرسة الخاصة</option>
+        </select>
+      </div>
+      <div class="choice property-choice">
+        <span class="choice-label">هل نحسب ثمن الأرض أو العقار؟</span>
+        <div class="segmented" role="group" aria-label="احتساب العقار">
+          <button id="excludeProperty" class="active" type="button">لا، تكلفة تشغيل المشروع فقط</button>
+          <button id="includeProperty" type="button">نعم، احسب كل شيء</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="propertyNote" class="property-note"><b>مهم:</b> الأرقام الآن لا تشمل قيمة الأرض أو العقار. هذا يوضح قوة المشروع نفسه بعيدًا عن قيمة الأصل.</div>
+
+    <section class="section" id="summary">
+      <div class="section-heading"><span>الخلاصة السريعة</span><h2 id="summaryTitle">مقارنة جميع المشاريع</h2><p>كل رقم تحته شرح مباشر لما يعنيه.</p></div>
+      <div class="numbers" id="numbers"></div>
+    </section>
+
+    <section class="section soft">
+      <div class="section-heading"><span>المقارنة</span><h2>من الأفضل إلى الأضعف؟</h2><p>الترتيب يجمع بين الربح المتوقع، ملاءمة الموقع، صعوبة التنفيذ، والمخاطر.</p></div>
+      <div class="project-list" id="projectList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span>الصورة المالية</span><h2>أين تذهب الأموال؟</h2><p>مقارنة مبلغ البداية بما سيدخل للمشروع وما سيبقى بعد مصاريف التشغيل في أول سنة.</p></div>
+      <div class="money-table-wrap">
+        <table class="money-table">
+          <thead><tr><th>المشروع</th><th>المبلغ المطلوب بالبداية</th><th>الدخل المتوقع بأول سنة</th><th>المتبقي بعد مصاريف التشغيل</th><th>القراءة السهلة</th></tr></thead>
+          <tbody id="moneyRows"></tbody>
+        </table>
+      </div>
+      <p class="assumption">أرقام الإيرادات والتكاليف توقعات تحليلية قابلة للتعديل وليست ضمانًا للنتائج الفعلية.</p>
+    </section>
+
+    <section class="section soft">
+      <div class="section-heading"><span>النتيجة بعد 10 سنوات</span><h2>هل يسترجع المشروع ما دفعناه ويزيد؟</h2><p>نقارن الأموال التي يتوقع أن يولدها المشروع خلال عشر سنوات بالمبلغ الذي دفعناه في البداية، بعد مراعاة أن قيمة المال تقل مع الوقت.</p></div>
+      <div class="future-grid" id="futureGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span>قبل الدفع</span><h2>أشياء لا تزال بحاجة إلى تأكيد</h2><p>وجود علامة «غير مؤكد» لا يعني رفض المشروع؛ بل يعني أن القرار النهائي ينتظر معلومة أو وثيقة.</p></div>
+      <div class="checks" id="checks"></div>
+    </section>
+
+    <section class="section decision-section">
+      <div class="final-card">
+        <span class="status warn">القرار المقترح</span>
+        <h2>ابدأ بالكوفي شوب، واختبر مشروع الفساتين قبل شراء العقار.</h2>
+        <p>مشروع الفساتين جيد عندما ننظر إلى تكلفة الصيانة والبضاعة فقط. لكن عند احتساب كامل مبلغ 500 ألف دينار يصبح العائد أقل من المطلوب بقليل، لذلك لا يُنصح بالشراء قبل التأكد من الطلب والترخيص والمواقف.</p>
+        <div class="steps"><div><b>1</b><span>اسأل عينة حقيقية من الزبائن واختبر الأسعار.</span></div><div><b>2</b><span>تأكد خطيًا من الترخيص والمواقف والدفاع المدني.</span></div><div><b>3</b><span>قارن النتائج الفعلية مع الافتراضات قبل الالتزام بالشراء.</span></div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>جميع المبالغ بالدينار الأردني.</span><a href="https://raw.githubusercontent.com/BaselGhanem/Rabiyeh/main/Rabieh_Investor_Feasibility_4_Projects.xlsx" download>تنزيل ملف Excel التفصيلي</a></footer>
+</body>
+</html>
