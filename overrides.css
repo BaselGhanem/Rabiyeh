@@ -1,0 +1,9 @@
+.projects {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1050px) {
+  .projects {
+    grid-template-columns: 1fr;
+  }
+}
