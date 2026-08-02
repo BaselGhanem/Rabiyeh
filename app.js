@@ -1,19 +1,109 @@
-Chart.register(ChartDataLabels);
-const P={shop:{ar:`الكوفي شوب`,en:`Coffee Shop`,capex:399000,land:800000,rev:437675,ebitda:22000,irrEx:24.95,irrIn:2.70,npvEx:304193,npvIn:-495807,score:69.25,dscr:.69,loan:7,status:`ok`,sar:`موصى به بشروط`,sen:`Conditionally Recommended`,trend:{revenue:[437675,490196,534314,571716,606019,636319,664954,691552,715756,737229],ebitda:[22000,48187,68209,83215,95688,104989,112715,118594,122364,123774],fcf:[-8661,35398,51920,64328,74492,82173,88454,93280,96439,97731],net:[-22289,4760,22419,36066,47686,56768,64590,70936,73951,75079]}},school:{ar:`المدرسة الخاصة`,en:`Private School`,capex:2880000,land:800000,rev:819350,ebitda:-283138,irrEx:-4.49,irrIn:-7.45,npvEx:-1718803,npvIn:-2518803,score:40.2,dscr:-1.80,loan:10,status:`no`,sar:`غير موصى به`,sen:`Not Recommended`,trend:{revenue:[819350,983220,1140535,1277399,1379591,1462367,1535485,1596905,1652796,1702380],ebitda:[-283138,-169275,-62781,23510,76463,110061,133227,144024,148073,144591],fcf:[-300252,-150168,-64383,6490,51973,80599,100001,109692,113428,111211],net:[-589858,-466923,-351357,-255994,-193969,-151299,-119061,-99192,-86071,-80481]}},house:{ar:`الكوفي هاوس`,en:`Coffee House`,capex:735000,land:800000,rev:711850,ebitda:-76115,irrEx:-6.12,irrIn:-14.34,npvEx:-445995,npvIn:-1245995,score:52.1,dscr:-1.43,loan:8,status:`re`,sar:`إعادة تصميم مطلوبة`,sen:`Redesign Required`,trend:{revenue:[711850,797272,869026,929858,985650,1034932,1081504,1124764,1164131,1199055],ebitda:[-76115,-40133,-13757,4771,19247,28686,35527,39348,39738,36307],fcf:[-103603,-37232,-15311,167,12050,19992,25627,28883,29429,26950],net:[-157700,-118411,-88727,-66891,-49108,-36362,-26213,-19085,-15387,-18818]}},dress:{ar:`تأجير فساتين زفاف`,en:`Wedding Dress Rental`,capex:130000,land:370000,rev:148800,ebitda:43908,irrEx:51.46,irrIn:10.91,npvEx:353746,npvIn:-16254,score:64.9,dscr:4.57,loan:7,status:`re`,sar:`واعد ويحتاج تحقق`,sen:`Promising; validation required`,trend:{revenue:[148800,163680,176774,189149,200498,210522,218943,227701,234532,241568],ebitda:[43908,53414,61361,68620,74935,80060,83759,87622,89787,91999],fcf:[22622,40941,47442,53306,58440,62646,65734,68797,70683,72436],net:[10250,18323,25149,31424,36944,41512,44939,48498,50230,51999]}}};
-const R=[[`التنظيم والترخيص`,`Zoning & licensing`,`critical`,`فجوة حرجة`,`Critical gap`],[`المواقف والحركة`,`Parking & circulation`,`pending`,`قيد التحقق`,`Pending`],[`الطلب والمنافسة`,`Demand & competition`,`pending`,`قيد التحقق`,`Pending`],[`عروض الإنشاء والتجهيز`,`Construction & equipment quotes`,`partial`,`تحقق جزئي`,`Partially verified`],[`التمويل البنكي`,`Bank financing`,`pending`,`قيد التحقق`,`Pending`],[`قيمة الأرض`,`Land valuation`,`partial`,`تحقق جزئي`,`Partially verified`],[`الضرائب والضمان`,`Tax & social security`,`pending`,`قيد التحقق`,`Pending`],[`الخدمات والضوضاء`,`Utilities & noise`,`pending`,`قيد التحقق`,`Pending`]];
-const el={lang:document.getElementById(`lang`),project:document.getElementById(`project`),metric:document.getElementById(`metric`),years:document.getElementById(`years`),ex:document.getElementById(`ex`),inc:document.getElementById(`inc`),reset:document.getElementById(`reset`),rg:document.getElementById(`rg`),ci:document.getElementById(`ci`),cf:document.getElementById(`cf`),rgO:document.getElementById(`rgO`),ciO:document.getElementById(`ciO`),cfO:document.getElementById(`cfO`),loader:document.getElementById(`appLoader`)};
-let S={lang:localStorage.getItem(`rab_lang`)||`ar`,land:localStorage.getItem(`rab_land`)||`ex`,project:localStorage.getItem(`rab_project`)||`all`,metric:localStorage.getItem(`rab_metric`)||`revenue`,years:+(localStorage.getItem(`rab_years`)||10)};let C={};
-const nf=new Intl.NumberFormat(`en-US`,{maximumFractionDigits:0}),pf=new Intl.NumberFormat(`en-US`,{maximumFractionDigits:2}),t=(a,e)=>S.lang===`ar`?a:e,m=v=>`${v<0?`−`:``}${nf.format(Math.abs(v))}`;
-const save=()=>{localStorage.setItem(`rab_lang`,S.lang);localStorage.setItem(`rab_land`,S.land);localStorage.setItem(`rab_project`,S.project);localStorage.setItem(`rab_metric`,S.metric);localStorage.setItem(`rab_years`,S.years)};
-const entries=()=>S.project===`all`?Object.entries(P):[[S.project,P[S.project]]];
-function applyLanguage(){document.documentElement.lang=S.lang;document.documentElement.dir=S.lang===`ar`?`rtl`:`ltr`;document.body.dir=document.documentElement.dir;document.querySelectorAll(`[data-ar]`).forEach(x=>x.innerHTML=x.dataset[S.lang]);el.lang.textContent=S.lang===`ar`?`English`:`العربية`;render()}
-function kpis(){const p=entries().length===1?entries()[0][1]:P.shop,cap=p.capex+(S.land===`inc`?p.land:0),npv=S.land===`inc`?p.npvIn:p.npvEx,irr=S.land===`inc`?p.irrIn:p.irrEx,A=[[t(`الاستثمار الكلي`,`Total investment`),m(cap),t(`دينار أردني`,`JOD`),`warn`],[t(`إيراد السنة الأولى`,`Year 1 revenue`),m(p.rev),t(`دينار أردني`,`JOD`),`good`],[`EBITDA`,m(p.ebitda),`${t(`هامش`,`Margin`)} ${pf.format(p.ebitda/p.rev*100)}%`,p.ebitda>=0?`good`:`bad`],[`NPV`,m(npv),t(`صافي القيمة الحالية`,`Net present value`),npv>=0?`good`:`bad`],[`IRR`,`${pf.format(irr)}%`,S.land===`inc`?t(`مع الأرض`,`Including land`):t(`دون الأرض`,`Excluding land`),irr>=0?`good`:`bad`],[t(`درجة القرار`,`Decision score`),pf.format(p.score),`/ 100`,p.score>=60?`good`:p.score>=50?`warn`:`bad`],[t(`الحد الأدنى DSCR`,`Minimum DSCR`),pf.format(p.dscr),`x`,p.dscr>=1.2?`good`:`bad`],[t(`فترة القرض`,`Loan term`),p.loan,t(`سنوات`,`years`),`warn`]];document.getElementById(`kpis`).innerHTML=A.map((x,i)=>`<article class="kpi"><em>${String(i+1).padStart(2,`0`)}</em><span>${x[0]}</span><b class="num">${x[1]}</b><small class="${x[3]}">${x[2]}</small></article>`).join(``)}
-function cards(){document.getElementById(`cards`).innerHTML=Object.entries(P).map(([k,p])=>{const cap=p.capex+(S.land===`inc`?p.land:0),npv=S.land===`inc`?p.npvIn:p.npvEx,irr=S.land===`inc`?p.irrIn:p.irrEx;return `<article class="project ${k===`shop`?`best`:``}"><div class="ptop"><div><p>${t(`البديل الاستثماري`,`Investment alternative`)}</p><h3>${t(p.ar,p.en)}</h3></div><div class="score" style="--s:${p.score}"><b class="num">${pf.format(p.score)}</b></div></div><div class="rows"><div class="row"><span>${t(`الاستثمار`,`Investment`)}</span><b class="num">${m(cap)}</b></div><div class="row"><span>${t(`الإيراد`,`Revenue`)}</span><b class="num">${m(p.rev)}</b></div><div class="row"><span>EBITDA</span><b class="num ${p.ebitda<0?`bad`:``}">${m(p.ebitda)}</b></div><div class="row"><span>NPV</span><b class="num ${npv<0?`bad`:``}">${m(npv)}</b></div><div class="row"><span>IRR</span><b class="num ${irr<0?`bad`:``}">${pf.format(irr)}%</b></div></div><span class="badge ${p.status}">${t(p.sar,p.sen)}</span></article>`}).join(``)}
-const grid=`rgba(103,119,122,.15)`,colors=[`#099999`,`#91383d`,`#a57943`,`#5d6fb0`];function kill(n){if(C[n])C[n].destroy()}function axes(y){return{x:{title:{display:true,text:t(`المشروع / السنة`,`Project / Year`)},grid:{display:false}},y:{title:{display:true,text:y},ticks:{callback:v=>nf.format(v)},grid:{color:grid}}}}
-function charts(){const E=entries();kill(`compare`);C.compare=new Chart(document.getElementById(`compareChart`),{type:`bar`,data:{labels:E.map(([,p])=>t(p.ar,p.en)),datasets:[{label:t(`الاستثمار`,`Investment`),data:E.map(([,p])=>p.capex+(S.land===`inc`?p.land:0)),backgroundColor:`#073b3a`,borderRadius:7},{label:t(`إيراد السنة الأولى`,`Year 1 revenue`),data:E.map(([,p])=>p.rev),backgroundColor:`#099999`,borderRadius:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:`bottom`},datalabels:{anchor:`end`,align:`top`,font:{size:10,weight:`600`},formatter:m}},scales:axes(t(`دينار أردني`,`JOD`))}});const keys=S.project===`all`?[`shop`,`school`,`house`,`dress`]:[S.project],names={revenue:t(`الإيرادات السنوية`,`Annual revenue`),ebitda:`EBITDA`,fcf:t(`التدفق النقدي الحر`,`Free cash flow`),net:t(`صافي الربح`,`Net profit`)};document.getElementById(`trendTitle`).textContent=names[S.metric];kill(`trend`);C.trend=new Chart(document.getElementById(`trendChart`),{type:`line`,data:{labels:Array.from({length:S.years},(_,i)=>`${t(`سنة`,`Year`)} ${i+1}`),datasets:keys.map((k,i)=>({label:t(P[k].ar,P[k].en),data:P[k].trend[S.metric].slice(0,S.years),borderColor:colors[i],backgroundColor:colors[i],tension:.3,borderWidth:3,pointRadius:3}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:`bottom`},datalabels:{display:c=>c.dataIndex===0||c.dataIndex===c.dataset.data.length-1,align:`top`,formatter:m,font:{size:9,weight:`600`}}},scales:axes(t(`دينار أردني`,`JOD`))}});kill(`npv`);const D=E.map(([,p])=>S.land===`inc`?p.npvIn:p.npvEx);C.npv=new Chart(document.getElementById(`npvChart`),{type:`bar`,data:{labels:E.map(([,p])=>t(p.ar,p.en)),datasets:[{data:D,backgroundColor:D.map(v=>v>=0?`#28705a`:`#91383d`),borderRadius:7}]},options:{indexAxis:`y`,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{anchor:`end`,align:c=>c.dataset.data[c.dataIndex]>=0?`right`:`left`,formatter:m,font:{size:9,weight:`700`}}},scales:{x:{title:{display:true,text:`NPV (JOD)`},ticks:{callback:v=>nf.format(v)},grid:{color:grid}},y:{title:{display:true,text:t(`المشروع`,`Project`)},grid:{display:false}}}}})}
-function risks(){document.getElementById(`risks`).innerHTML=R.map(r=>`<article class="risk"><div class="riskTop"><span class="riskTag ${r[2]}">${t(r[3],r[4])}</span><span class="num">P${r[2]===`critical`?1:r[2]===`pending`?2:3}</span></div><h4>${t(r[0],r[1])}</h4><p>${t(`يتطلب مستندات أو تحققًا مستقلًا قبل الالتزام الاستثماري.`,`Requires documents or independent verification before commitment.`)}</p></article>`).join(``)}
-function scenario(){kill(`scenario`);const key=S.project===`all`?`shop`:S.project,p=P[key],rg=+el.rg.value/100,ci=+el.ci.value/100,cf=+el.cf.value/100,rev=[],eb=[];document.getElementById(`scenarioTitle`).textContent=t(`أثر السيناريو على ${p.ar}`,`Scenario impact on ${p.en}`);for(let i=0;i<10;i++){const r=p.rev*Math.pow(1+rg,i),cost=(p.rev-p.ebitda)*Math.pow(1+ci,i);rev.push(r);eb.push(r-cost-(i===0?p.capex*(cf-1):0))}C.scenario=new Chart(document.getElementById(`scenarioChart`),{type:`line`,data:{labels:Array.from({length:10},(_,i)=>`${t(`سنة`,`Year`)} ${i+1}`),datasets:[{label:t(`الإيرادات`,`Revenue`),data:rev,borderColor:`#099999`,backgroundColor:`#099999`,borderWidth:3,tension:.3},{label:`EBITDA`,data:eb,borderColor:`#a57943`,backgroundColor:`#a57943`,borderWidth:3,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:`bottom`},datalabels:{display:c=>c.dataIndex===0||c.dataIndex===9,align:`top`,formatter:m,font:{size:9,weight:`600`}}},scales:axes(t(`دينار أردني`,`JOD`))}})}
-function render(){kpis();cards();charts();risks();scenario()}function sync(){el.project.value=S.project;el.metric.value=S.metric;el.years.value=S.years;el.ex.classList.toggle(`on`,S.land===`ex`);el.inc.classList.toggle(`on`,S.land===`inc`)}
-el.lang.addEventListener(`click`,()=>{S.lang=S.lang===`ar`?`en`:`ar`;save();applyLanguage()});el.project.addEventListener(`change`,e=>{S.project=e.target.value;save();render()});el.metric.addEventListener(`change`,e=>{S.metric=e.target.value;save();charts()});el.years.addEventListener(`change`,e=>{S.years=+e.target.value;save();charts()});el.ex.addEventListener(`click`,()=>{S.land=`ex`;save();sync();render()});el.inc.addEventListener(`click`,()=>{S.land=`inc`;save();sync();render()});el.reset.addEventListener(`click`,()=>{S={...S,land:`ex`,project:`all`,metric:`revenue`,years:10};save();sync();preset(`base`);render()});
-function preset(n){const q={conservative:[1,6,115],base:[5,3,100],optimistic:[8,2,95]}[n];el.rg.value=q[0];el.ci.value=q[1];el.cf.value=q[2];document.querySelectorAll(`[data-s]`).forEach(b=>b.classList.toggle(`on`,b.dataset.s===n));outs();scenario()}function outs(){el.rgO.textContent=`${(+el.rg.value).toFixed(1)}%`;el.ciO.textContent=`${(+el.ci.value).toFixed(1)}%`;el.cfO.textContent=`${el.cf.value}%`}
-document.querySelectorAll(`[data-s]`).forEach(b=>b.addEventListener(`click`,()=>preset(b.dataset.s)));[el.rg,el.ci,el.cf].forEach(x=>x.addEventListener(`input`,()=>{outs();scenario()}));sync();outs();applyLanguage();const hideLoader=()=>el.loader?.classList.add(`hide`);window.addEventListener(`load`,()=>window.setTimeout(hideLoader,650));window.setTimeout(hideLoader,5000);
+const projects = {
+  shop: { name: `الكوفي شوب`, start: 399000, property: 800000, income: 437675, remains: 22000, returnWithout: 24.95, returnWith: 2.70, futureWithout: 304193, futureWith: -495807, score: 69.25, decision: `الأفضل حاليًا بشروط`, tone: `good` },
+  dress: { name: `تأجير فساتين الزفاف`, start: 130000, property: 370000, income: 148800, remains: 43908, returnWithout: 51.46, returnWith: 10.91, futureWithout: 353746, futureWith: -16254, score: 64.90, decision: `واعد ويحتاج اختبار`, tone: `warn` },
+  house: { name: `الكوفي هاوس`, start: 735000, property: 800000, income: 711850, remains: -76115, returnWithout: -6.12, returnWith: -14.34, futureWithout: -445995, futureWith: -1245995, score: 52.10, decision: `يحتاج تغيير الفكرة`, tone: `warn` },
+  school: { name: `المدرسة الخاصة`, start: 2880000, property: 800000, income: 819350, remains: -283138, returnWithout: -4.49, returnWith: -7.45, futureWithout: -1718803, futureWith: -2518803, score: 40.20, decision: `غير مناسب حاليًا`, tone: `bad` }
+};
+
+const checks = [
+  [`التنظيم والترخيص`, `بحاجة إلى تأكيد رسمي قبل أي التزام مالي.`, `ضروري جدًا`, `bad`],
+  [`المواقف وسهولة الدخول`, `يجب عدّ المواقف وفحص حركة السيارات في ساعات الذروة.`, `غير مؤكد`, `warn`],
+  [`حجم الطلب والمنافسين`, `نحتاج أرقامًا ميدانية بدل الاعتماد على التوقعات فقط.`, `غير مؤكد`, `warn`],
+  [`أسعار البناء والتجهيز`, `بعض الأسعار تقديرية وتحتاج عروض أسعار حديثة.`, `تأكيد جزئي`, `neutral`],
+  [`شروط التمويل البنكي`, `الفائدة والقسط ونسبة التمويل تحتاج عرضًا فعليًا من البنك.`, `غير مؤكد`, `warn`],
+  [`قيمة الأرض أو العقار`, `القيمة المستخدمة تحتاج تخمينًا معتمدًا أو مقارنة بيع حديثة.`, `تأكيد جزئي`, `neutral`]
+];
+
+const format = new Intl.NumberFormat(`en-US`, { maximumFractionDigits: 0 });
+const state = { project: `all`, includeProperty: false };
+const projectSelect = document.getElementById(`project`);
+const excludeProperty = document.getElementById(`excludeProperty`);
+const includeProperty = document.getElementById(`includeProperty`);
+
+const money = (value) => `${value < 0 ? `−` : ``}${format.format(Math.abs(value))}`;
+const selectedEntries = () => state.project === `all` ? Object.entries(projects) : [[state.project, projects[state.project]]];
+const totalStart = (project) => project.start + (state.includeProperty ? project.property : 0);
+const futureValue = (project) => state.includeProperty ? project.futureWith : project.futureWithout;
+const yearlyReturn = (project) => state.includeProperty ? project.returnWith : project.returnWithout;
+const returnText = (value) => value > 15 ? `قوي` : value >= 8 ? `مقبول` : value >= 0 ? `ضعيف` : `خاسر`;
+const futureText = (value) => value >= 0 ? `يعوض المبلغ ويضيف قيمة متوقعة` : `لا يعوض المبلغ المطلوب بالكامل`;
+
+function renderNumbers() {
+  const project = state.project === `all` ? projects.shop : projects[state.project];
+  const start = totalStart(project);
+  const future = futureValue(project);
+  const projectName = state.project === `all` ? `أفضل مشروع حاليًا: ${project.name}` : project.name;
+  document.getElementById(`summaryTitle`).textContent = projectName;
+  const cards = [
+    [`كم سندفع بالبداية؟`, money(start), state.includeProperty ? `يشمل المشروع والأرض أو العقار` : `لتجهيز وتشغيل المشروع فقط`, `start`],
+    [`كم سيدخل بأول سنة؟`, money(project.income), `مجموع المبيعات المتوقعة، وليس الربح`, `income`],
+    [`كم يبقى بعد مصاريف التشغيل؟`, money(project.remains), project.remains >= 0 ? `قبل أقساط البنك والضريبة` : `المصاريف أعلى من الدخل`, project.remains >= 0 ? `good` : `bad`],
+    [`كم يحقق كل 100 دينار سنويًا؟`, `${yearlyReturn(project).toFixed(2)} دينار`, `تقدير للعائد السنوي على المبلغ المدفوع`, yearlyReturn(project) >= 8 ? `good` : `bad`],
+    [`هل يعوض ما دفعناه خلال 10 سنوات؟`, future >= 0 ? `نعم` : `لا`, futureText(future), future >= 0 ? `good` : `bad`],
+    [`ما قوة القرار؟`, `${project.score.toFixed(2)} من 100`, project.decision, project.tone]
+  ];
+  document.getElementById(`numbers`).innerHTML = cards.map(([title, value, help, tone], index) => `<article class="number-card ${tone}"><span class="number-index">${String(index + 1).padStart(2, `0`)}</span><h3>${title}</h3><b>${value}</b><p>${help}</p></article>`).join(``);
+}
+
+function renderProjects() {
+  const sorted = Object.entries(projects).sort((first, second) => second[1].score - first[1].score);
+  document.getElementById(`projectList`).innerHTML = sorted.map(([key, project], index) => `<button class="project-row ${state.project === key ? `selected` : ``}" type="button" data-project="${key}"><span class="place">${index + 1}</span><span class="project-name"><b>${project.name}</b><small>${project.decision}</small></span><span class="score-bar"><i style="width:${project.score}%"></i></span><strong>${project.score.toFixed(2)}<small> / 100</small></strong></button>`).join(``);
+  document.querySelectorAll(`[data-project]`).forEach((button) => button.addEventListener(`click`, () => {
+    state.project = button.dataset.project;
+    projectSelect.value = state.project;
+    render();
+    document.getElementById(`summary`).scrollIntoView({ behavior: `smooth`, block: `start` });
+  }));
+}
+
+function renderMoneyRows() {
+  document.getElementById(`moneyRows`).innerHTML = selectedEntries().map(([, project]) => {
+    const remainsTone = project.remains >= 0 ? `positive` : `negative`;
+    const easyText = project.remains >= 0 ? `يبقى من الدخل ${((project.remains / project.income) * 100).toFixed(1)}% بعد مصاريف التشغيل` : `مصاريف التشغيل أعلى من الدخل بـ ${money(Math.abs(project.remains))}`;
+    return `<tr><th>${project.name}</th><td>${money(totalStart(project))}</td><td>${money(project.income)}</td><td class="${remainsTone}">${money(project.remains)}</td><td>${easyText}</td></tr>`;
+  }).join(``);
+}
+
+function renderFuture() {
+  document.getElementById(`futureGrid`).innerHTML = selectedEntries().map(([, project]) => {
+    const value = futureValue(project);
+    return `<article class="future-card ${value >= 0 ? `good` : `bad`}"><div><h3>${project.name}</h3><span>${state.includeProperty ? `بعد احتساب المشروع والعقار` : `بعد احتساب تكلفة المشروع فقط`}</span></div><b>${value >= 0 ? `فائض متوقع` : `نقص متوقع`} ${money(Math.abs(value))}</b><p>${futureText(value)} خلال فترة الدراسة.</p></article>`;
+  }).join(``);
+}
+
+function renderChecks() {
+  document.getElementById(`checks`).innerHTML = checks.map(([title, text, label, tone]) => `<article class="check-card"><span class="check-status ${tone}">${label}</span><h3>${title}</h3><p>${text}</p></article>`).join(``);
+}
+
+function renderPropertyState() {
+  excludeProperty.classList.toggle(`active`, !state.includeProperty);
+  includeProperty.classList.toggle(`active`, state.includeProperty);
+  const note = document.getElementById(`propertyNote`);
+  note.innerHTML = state.includeProperty
+    ? `<b>مهم:</b> الأرقام الآن تشمل قيمة الأرض أو العقار، لذلك تعكس كامل المبلغ المطلوب للشراء والتشغيل.`
+    : `<b>مهم:</b> الأرقام الآن لا تشمل قيمة الأرض أو العقار. هذا يوضح قوة المشروع نفسه بعيدًا عن قيمة الأصل.`;
+}
+
+function render() {
+  renderPropertyState();
+  renderNumbers();
+  renderProjects();
+  renderMoneyRows();
+  renderFuture();
+}
+
+projectSelect.addEventListener(`change`, (event) => {
+  state.project = event.target.value;
+  render();
+});
+excludeProperty.addEventListener(`click`, () => {
+  state.includeProperty = false;
+  render();
+});
+includeProperty.addEventListener(`click`, () => {
+  state.includeProperty = true;
+  render();
+});
+
+renderChecks();
+render();

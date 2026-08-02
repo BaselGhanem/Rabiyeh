@@ -1,0 +1,86 @@
+.projects {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1050px) {
+  .projects {
+    grid-template-columns: 1fr;
+  }
+}
+
+.term-guide {
+  padding: 64px 0 18px;
+  background: #f4f8f7;
+}
+
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.term-grid article {
+  padding: 18px;
+  border: 1px solid rgba(7, 59, 58, .12);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.term-grid b {
+  display: block;
+  margin-bottom: 7px;
+  color: #073b3a;
+  font-size: 1rem;
+}
+
+.term-grid span,
+.term-help,
+.term-row small {
+  color: #667577;
+  font-size: .78rem;
+  line-height: 1.65;
+}
+
+.kpi .term-help {
+  margin: 10px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid rgba(7, 59, 58, .09);
+}
+
+.term-row {
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.term-row > span {
+  flex: 1;
+}
+
+.term-row span b,
+.term-row small {
+  display: block;
+}
+
+.term-row small {
+  margin-top: 3px;
+  max-width: 245px;
+}
+
+.term-row > .num {
+  flex: 0 0 auto;
+  padding-top: 2px;
+}
+
+.control-help {
+  display: block;
+  margin: -5px 0 10px;
+  color: #667577;
+  font-size: .76rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .term-grid {
+    grid-template-columns: 1fr;
+  }
+}
