@@ -9,8 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1">
-  <script src="app.js?v=1" defer></script>
+  <link rel="stylesheet" href="styles.css?v=2">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <script src="app.js?v=2" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -23,7 +25,7 @@
       <div class="hero-copy">
         <span class="eyebrow">أربعة مشاريع · قرار واحد</span>
         <h1>أي مشروع أفضل؟<br><em>الأرقام تحكي ببساطة.</em></h1>
-        <p>بدون مصطلحات مالية معقدة. اختر المشروع، وحدد هل تريد احتساب قيمة الأرض أو العقار، وستعرف كم تدفع وكم يدخل وكم يبقى وما القرار المقترح.</p>
+        <p>كل أرقام الدراسة موجودة هنا: مبلغ البداية، المبيعات، الربح، النقد المتاح، العائد، القرض، توقعات عشر سنوات، والمخاطر — بأسماء واضحة ومن دون مصطلحات معقدة.</p>
         <a class="button primary" href="#summary">شاهد النتيجة</a>
       </div>
       <aside class="winner-card">
@@ -53,12 +55,29 @@
           <button id="includeProperty" type="button">نعم، احسب كل شيء</button>
         </div>
       </div>
+      <div class="choice">
+        <label for="metric">ماذا تريد أن ترى عبر السنوات؟</label>
+        <select id="metric">
+          <option value="revenue">إجمالي المبيعات</option>
+          <option value="ebitda">المتبقي بعد مصاريف التشغيل</option>
+          <option value="fcf">النقد المتاح فعليًا</option>
+          <option value="net">صافي الربح المتوقع</option>
+        </select>
+      </div>
+      <div class="choice">
+        <label for="years">كم سنة تريد عرضها؟</label>
+        <select id="years">
+          <option value="10">10 سنوات</option>
+          <option value="5">أول 5 سنوات</option>
+          <option value="3">أول 3 سنوات</option>
+        </select>
+      </div>
     </section>
 
     <div id="propertyNote" class="property-note"><b>مهم:</b> الأرقام الآن لا تشمل قيمة الأرض أو العقار. هذا يوضح قوة المشروع نفسه بعيدًا عن قيمة الأصل.</div>
 
     <section class="section" id="summary">
-      <div class="section-heading"><span>الخلاصة السريعة</span><h2 id="summaryTitle">مقارنة جميع المشاريع</h2><p>كل رقم تحته شرح مباشر لما يعنيه.</p></div>
+      <div class="section-heading"><span>الخلاصة الكاملة</span><h2 id="summaryTitle">مقارنة جميع المشاريع</h2><p>كل رقم موجود كما في الدراسة التفصيلية، لكن اسمه وشرحه مكتوبان بلغة مباشرة.</p></div>
       <div class="numbers" id="numbers"></div>
     </section>
 
@@ -68,14 +87,36 @@
     </section>
 
     <section class="section">
-      <div class="section-heading"><span>الصورة المالية</span><h2>أين تذهب الأموال؟</h2><p>مقارنة مبلغ البداية بما سيدخل للمشروع وما سيبقى بعد مصاريف التشغيل في أول سنة.</p></div>
+      <div class="section-heading"><span>كل أرقام السنة الأولى</span><h2>أين تذهب الأموال؟ وماذا يبقى؟</h2><p>مرّر الجدول أفقيًا على الهاتف. صافي الربح والنقد المتاح تقديرات من النموذج وليسا نتائج فعلية أو مدققة.</p></div>
       <div class="money-table-wrap">
         <table class="money-table">
-          <thead><tr><th>المشروع</th><th>المبلغ المطلوب بالبداية</th><th>الدخل المتوقع بأول سنة</th><th>المتبقي بعد مصاريف التشغيل</th><th>القراءة السهلة</th></tr></thead>
+          <thead><tr><th>المشروع</th><th>المبلغ المطلوب بالبداية</th><th>إجمالي المبيعات</th><th>المتبقي بعد مصاريف التشغيل</th><th>النقد المتاح فعليًا</th><th>صافي الربح المتوقع</th><th>العائد السنوي المتوقع</th><th>هل يغطي قسط البنك؟</th><th>مدة سداد القرض</th><th>القراءة السهلة</th></tr></thead>
           <tbody id="moneyRows"></tbody>
         </table>
       </div>
       <p class="assumption">أرقام الإيرادات والتكاليف توقعات تحليلية قابلة للتعديل وليست ضمانًا للنتائج الفعلية.</p>
+    </section>
+
+    <section class="section soft" id="performance">
+      <div class="section-heading"><span>الأداء عبر السنوات</span><h2>كيف تتغير أرقام المشروع سنة بعد سنة؟</h2><p id="trendHelp">يعرض الخط مجموع المبيعات المتوقعة في كل سنة. يمكنك تغيير نوع الرقم وعدد السنوات من الخيارات أعلاه.</p></div>
+      <div class="charts-grid">
+        <article class="chart-card wide"><h3 id="trendTitle">إجمالي المبيعات عبر السنوات</h3><div class="chart-canvas"><canvas id="trendChart"></canvas></div></article>
+        <article class="chart-card"><h3>مبلغ البداية مقابل مبيعات أول سنة</h3><p>لرؤية حجم المبلغ المطلوب مقارنة بما يبيعه المشروع في أول سنة.</p><div class="chart-canvas small"><canvas id="compareChart"></canvas></div></article>
+        <article class="chart-card"><h3>الزيادة أو النقص بعد 10 سنوات بقيمة اليوم</h3><p>الموجب يعني أن المشروع يعوض المبلغ ويحقق العائد المطلوب 11.5%، والسالب يعني أنه لا يصل إليه.</p><div class="chart-canvas small"><canvas id="futureChart"></canvas></div></article>
+      </div>
+    </section>
+
+    <section class="section" id="scenario">
+      <div class="section-heading"><span>جرّب الاحتمالات</span><h2>ماذا يحدث إذا تغيرت المبيعات أو المصاريف؟</h2><p>هذه المحاكاة تساعد على فهم حساسية النتيجة، وهي تقدير تحليلي وليست ضمانًا.</p></div>
+      <div class="scenario-layout">
+        <aside class="scenario-controls">
+          <div class="preset-buttons"><button type="button" data-preset="conservative">حذر</button><button type="button" class="active" data-preset="base">متوقع</button><button type="button" data-preset="optimistic">متفائل</button></div>
+          <label class="range-control"><span>كم تزيد المبيعات كل سنة؟ <b id="salesGrowthOutput">5.0%</b></span><small>ارفع النسبة إذا توقعت نموًا أسرع في عدد الزبائن أو الأسعار.</small><input id="salesGrowth" type="range" min="-5" max="15" value="5" step="0.5"></label>
+          <label class="range-control"><span>كم ترتفع المصاريف كل سنة؟ <b id="costGrowthOutput">3.0%</b></span><small>يشمل ارتفاع الرواتب والإيجارات والخدمات وباقي مصاريف التشغيل.</small><input id="costGrowth" type="range" min="0" max="12" value="3" step="0.5"></label>
+          <label class="range-control"><span>تكلفة البداية مقارنة بالتقدير <b id="startFactorOutput">100%</b></span><small>100% هي التكلفة الحالية؛ 110% تعني أنها أعلى بعشرة بالمئة.</small><input id="startFactor" type="range" min="80" max="130" value="100"></label>
+        </aside>
+        <article class="chart-card"><h3 id="scenarioTitle">أثر الاحتمال على الكوفي شوب</h3><p>الخط الأخضر للمبيعات الكلية، والخط الذهبي للمبلغ المتبقي بعد مصاريف التشغيل.</p><div class="chart-canvas"><canvas id="scenarioChart"></canvas></div></article>
+      </div>
     </section>
 
     <section class="section soft">
@@ -84,7 +125,7 @@
     </section>
 
     <section class="section">
-      <div class="section-heading"><span>قبل الدفع</span><h2>أشياء لا تزال بحاجة إلى تأكيد</h2><p>وجود علامة «غير مؤكد» لا يعني رفض المشروع؛ بل يعني أن القرار النهائي ينتظر معلومة أو وثيقة.</p></div>
+      <div class="section-heading"><span>قبل الدفع</span><h2>كل الأشياء التي لا تزال بحاجة إلى تأكيد</h2><p>وجود علامة «غير مؤكد» لا يعني رفض المشروع؛ بل يعني أن القرار النهائي ينتظر معلومة أو وثيقة.</p></div>
       <div class="checks" id="checks"></div>
     </section>
 
